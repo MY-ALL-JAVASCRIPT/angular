@@ -59,7 +59,9 @@ export function typeToValue(
 
       return {
         kind: TypeValueReferenceKind.LOCAL,
-        expression: firstDecl.name,
+        // Copying the name here ensures the generated references will be correctly transformed
+        // along with the import.
+        expression: ts.updateIdentifier(firstDecl.name),
         defaultImportStatement: firstDecl.parent,
       };
     } else if (ts.isImportSpecifier(firstDecl)) {
