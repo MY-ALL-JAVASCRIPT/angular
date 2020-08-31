@@ -165,9 +165,10 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   }
 
   /**
+   * @description
    * A lifecycle method called when the directive's inputs are initialized. For internal use only.
+   *
    * @throws If the directive does not have a valid parent.
-   * @nodoc
    */
   ngOnInit(): void {
     this._checkParentType();
@@ -175,8 +176,8 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   }
 
   /**
+   * @description
    * A lifecycle method called before the directive's instance is destroyed. For internal use only.
-   * @nodoc
    */
   ngOnDestroy(): void {
     if (this.formDirective) {

@@ -52,17 +52,23 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   // TODO(issue/24571): remove '!'.
   _asyncValidators!: any[];
 
-  /** @nodoc */
+  /**
+   * @description
+   * An internal callback method triggered on the instance after the inputs are set.
+   * Registers the group with its parent group.
+   */
   ngOnInit(): void {
     this._checkParentType();
-    // Register the group with its parent group.
     this.formDirective!.addFormGroup(this);
   }
 
-  /** @nodoc */
+  /**
+   * @description
+   * An internal callback method triggered before the instance is destroyed.
+   * Removes the group from its parent group.
+   */
   ngOnDestroy(): void {
     if (this.formDirective) {
-      // Remove the group from its parent group.
       this.formDirective.removeFormGroup(this);
     }
   }

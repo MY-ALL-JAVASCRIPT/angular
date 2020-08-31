@@ -75,14 +75,14 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   /**
+   * @description
    * The registered callback function called when an input event occurs on the input element.
-   * @nodoc
    */
   onChange = (_: any) => {};
 
   /**
+   * @description
    * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
    */
   onTouched = () => {};
 
@@ -99,7 +99,8 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "value" property on the input element.
-   * @nodoc
+   *
+   * @param value The checked value
    */
   writeValue(value: any): void {
     const normalizedValue = value == null ? '' : value;
@@ -107,16 +108,20 @@ export class DefaultValueAccessor implements ControlValueAccessor {
   }
 
   /**
+   * @description
    * Registers a function called when the control value changes.
-   * @nodoc
+   *
+   * @param fn The callback function
    */
   registerOnChange(fn: (_: any) => void): void {
     this.onChange = fn;
   }
 
   /**
+   * @description
    * Registers a function called when the control is touched.
-   * @nodoc
+   *
+   * @param fn The callback function
    */
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
@@ -124,7 +129,8 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "disabled" property on the input element.
-   * @nodoc
+   *
+   * @param isDisabled The disabled value
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);

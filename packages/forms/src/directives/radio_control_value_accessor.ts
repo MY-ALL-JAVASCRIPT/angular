@@ -112,14 +112,14 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
   _fn!: Function;
 
   /**
+   * @description
    * The registered callback function called when a change event occurs on the input element.
-   * @nodoc
    */
   onChange = () => {};
 
   /**
+   * @description
    * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
    */
   onTouched = () => {};
 
@@ -148,21 +148,29 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
       private _renderer: Renderer2, private _elementRef: ElementRef,
       private _registry: RadioControlRegistry, private _injector: Injector) {}
 
-  /** @nodoc */
+  /**
+   * @description
+   * A lifecycle method called when the directive is initialized. For internal use only.
+   */
   ngOnInit(): void {
     this._control = this._injector.get(NgControl);
     this._checkName();
     this._registry.add(this._control, this);
   }
 
-  /** @nodoc */
+  /**
+   * @description
+   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
+   */
   ngOnDestroy(): void {
     this._registry.remove(this);
   }
 
   /**
+   * @description
    * Sets the "checked" property value on the radio input element.
-   * @nodoc
+   *
+   * @param value The checked value
    */
   writeValue(value: any): void {
     this._state = value === this.value;
@@ -170,8 +178,10 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
   }
 
   /**
+   * @description
    * Registers a function called when the control value changes.
-   * @nodoc
+   *
+   * @param fn The callback function
    */
   registerOnChange(fn: (_: any) => {}): void {
     this._fn = fn;
@@ -191,8 +201,10 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
   }
 
   /**
+   * @description
    * Registers a function called when the control is touched.
-   * @nodoc
+   *
+   * @param fn The callback function
    */
   registerOnTouched(fn: () => {}): void {
     this.onTouched = fn;
@@ -200,7 +212,8 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
 
   /**
    * Sets the "disabled" property on the input element.
-   * @nodoc
+   *
+   * @param isDisabled The disabled value
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);

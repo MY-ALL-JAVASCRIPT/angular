@@ -149,8 +149,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   _registered = false;
 
   /**
+   * @description
    * Internal reference to the view model value.
-   * @nodoc
    */
   viewModel: any;
 
@@ -213,7 +213,13 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  /** @nodoc */
+  /**
+   * @description
+   * A lifecycle method called when the directive's inputs change. For internal use
+   * only.
+   *
+   * @param changes A object of key/value pairs for the set of changed inputs.
+   */
   ngOnChanges(changes: SimpleChanges) {
     this._checkForErrors();
     if (!this._registered) this._setUpControl();
@@ -227,7 +233,11 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /**
+   * @description
+   * Lifecycle method called before the directive's instance is destroyed. For internal
+   * use only.
+   */
   ngOnDestroy(): void {
     this.formDirective && this.formDirective.removeControl(this);
   }

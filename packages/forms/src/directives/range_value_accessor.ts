@@ -52,15 +52,15 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
 })
 export class RangeValueAccessor implements ControlValueAccessor {
   /**
+   * @description
    * The registered callback function called when a change or input event occurs on the input
    * element.
-   * @nodoc
    */
   onChange = (_: any) => {};
 
   /**
+   * @description
    * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
    */
   onTouched = () => {};
 
@@ -68,15 +68,18 @@ export class RangeValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "value" property on the input element.
-   * @nodoc
+   *
+   * @param value The checked value
    */
   writeValue(value: any): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'value', parseFloat(value));
   }
 
   /**
+   * @description
    * Registers a function called when the control value changes.
-   * @nodoc
+   *
+   * @param fn The callback function
    */
   registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => {
@@ -85,8 +88,10 @@ export class RangeValueAccessor implements ControlValueAccessor {
   }
 
   /**
+   * @description
    * Registers a function called when the control is touched.
-   * @nodoc
+   *
+   * @param fn The callback function
    */
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
@@ -94,7 +99,8 @@ export class RangeValueAccessor implements ControlValueAccessor {
 
   /**
    * Sets the "disabled" property on the range input element.
-   * @nodoc
+   *
+   * @param isDisabled The disabled value
    */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
