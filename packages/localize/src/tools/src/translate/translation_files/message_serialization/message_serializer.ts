@@ -75,9 +75,29 @@ export class MessageSerializer<T> extends BaseVisitor {
   }
 
   visitContainedNodes(nodes: Node[]): void {
-    this.renderer.startContainer();
-    visitAll(this, nodes);
-    this.renderer.closeContainer();
+    const length = nodes.length;
+    let index = 0;
+    while (index < length) {
+      if (!this.isPlaceholderContainer(nodes[index])) {
+        const startOfContainedNodes = index;
+        while (index < length - 1) {
+          index++;
+          if (this.isPlaceholderContainer(nodes[index])) {
+            break;
+          }
+        }
+        if (index - startOfContainedNodes > 1) {
+          // Only create a container if there are two or more contained Nodes in a row
+          this.renderer.startContainer();
+          visitAll(this, nodes.slice(startOfContainedNodes, index - 1));
+          this.renderer.closeContainer();
+        }
+      }
+      if (index < length) {
+        nodes[index].visit(this, undefined);
+      }
+      index++;
+    }
   }
 
   visitPlaceholder(name: string, body: string|undefined): void {
