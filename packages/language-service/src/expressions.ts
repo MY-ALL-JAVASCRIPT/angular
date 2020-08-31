@@ -63,7 +63,6 @@ export function getExpressionCompletions(
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
   tail.visit({
-    visitUnary(_ast) {},
     visitBinary(_ast) {},
     visitChain(_ast) {},
     visitConditional(_ast) {},
@@ -158,7 +157,6 @@ export function getExpressionSymbol(
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
   tail.visit({
-    visitUnary(_ast) {},
     visitBinary(_ast) {},
     visitChain(_ast) {},
     visitConditional(_ast) {},

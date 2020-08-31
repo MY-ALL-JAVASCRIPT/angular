@@ -31,11 +31,6 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('((((ctx).a))!);');
   });
 
-  it('should handle unary - operator', () => {
-    const TEMPLATE = `{{-1}}`;
-    expect(tcb(TEMPLATE)).toContain('(-1);');
-  });
-
   it('should handle keyed property access', () => {
     const TEMPLATE = `{{a[b]}}`;
     expect(tcb(TEMPLATE)).toContain('(((ctx).a))[((ctx).b)];');
