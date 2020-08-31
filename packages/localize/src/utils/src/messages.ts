@@ -59,6 +59,10 @@ export interface MessageMetadata {
    */
   text: string;
   /**
+   * A unique identifier for this message.
+   */
+  id?: MessageId;
+  /**
    * Legacy message ids, if provided.
    *
    * In legacy message formats the message id can only be computed directly from the original
@@ -69,12 +73,6 @@ export interface MessageMetadata {
    * of translation if the translations are encoded using the legacy message id.
    */
   legacyIds?: string[];
-  /**
-   * The id of the `message` if a custom one was specified explicitly.
-   *
-   * This id overrides any computed or legacy ids.
-   */
-  customId?: string;
   /**
    * The meaning of the `message`, used to distinguish identical `messageString`s.
    */
@@ -112,6 +110,8 @@ export interface MessageMetadata {
 export interface ParsedMessage extends MessageMetadata {
   /**
    * The key used to look up the appropriate translation target.
+   *
+   * In `ParsedMessage` this is a required field, whereas it is optional in `MessageMetadata`.
    */
   id: MessageId;
   /**
@@ -129,8 +129,7 @@ export interface ParsedMessage extends MessageMetadata {
 }
 
 /**
- * Parse a `$localize` tagged string into a structure that can be used for translation or
- * extraction.
+ * Parse a `$localize` tagged string into a structure that can be used for translation.
  *
  * See `ParsedMessage` for an example.
  */
@@ -152,14 +151,13 @@ export function parseMessage(
     placeholderNames.push(placeholderName);
     cleanedMessageParts.push(messagePart);
   }
-  const messageId = metadata.customId || computeMsgId(messageString, metadata.meaning || '');
+  const messageId = metadata.id || computeMsgId(messageString, metadata.meaning || '');
   const legacyIds = metadata.legacyIds ? metadata.legacyIds.filter(id => id !== messageId) : [];
   return {
     id: messageId,
     legacyIds,
     substitutions,
     text: messageString,
-    customId: metadata.customId,
     meaning: metadata.meaning || '',
     description: metadata.description || '',
     messageParts: cleanedMessageParts,
@@ -200,7 +198,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
     return {text: messageString};
   } else {
     const [meaningDescAndId, ...legacyIds] = block.split(LEGACY_ID_INDICATOR);
-    const [meaningAndDesc, customId] = meaningDescAndId.split(ID_SEPARATOR, 2);
+    const [meaningAndDesc, id] = meaningDescAndId.split(ID_SEPARATOR, 2);
     let [meaning, description]: (string|undefined)[] = meaningAndDesc.split(MEANING_SEPARATOR, 2);
     if (description === undefined) {
       description = meaning;
@@ -209,7 +207,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
     if (description === '') {
       description = undefined;
     }
-    return {text: messageString, meaning, description, customId, legacyIds};
+    return {text: messageString, meaning, description, id, legacyIds};
   }
 }
 
