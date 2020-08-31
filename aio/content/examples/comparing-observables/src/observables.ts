@@ -1,72 +1,40 @@
-// #docplaster
-
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-export function docRegionObservable(console: Console) {
-  // #docregion observable
+// #docregion observable
 
-  // declare a publishing operation
-  const observable = new Observable<number>(observer => {
-    // Subscriber fn...
-    // #enddocregion observable
-    // The below code is used for unit testing only
-    observer.next(2);
-    // #docregion observable
-  });
+// declare a publishing operation
+const observable = new Observable<number>(observer => {
+  // Subscriber fn...
+});
 
-  // initiate execution
-  observable.subscribe(value => {
-    // observer handles notifications
-    // #enddocregion observable
-    // The below code is used for unit testing only
-    console.log(value);
-    // #docregion observable
-  });
+// initiate execution
+observable.subscribe(() => {
+  // observer handles notifications
+});
 
-  // #enddocregion observable
-  return observable;
-}
+// #enddocregion observable
 
-export function docRegionUnsubscribe() {
-  const observable = new Observable<number>(() => {
-    // Subscriber fn...
-  });
-  // #docregion unsubscribe
+// #docregion unsubscribe
 
-  const subscription = observable.subscribe(() => {
-    // observer handles notifications
-  });
+const subscription = observable.subscribe(() => {
+  // observer handles notifications
+});
 
-  subscription.unsubscribe();
+subscription.unsubscribe();
 
-  // #enddocregion unsubscribe
-  return subscription;
-}
+// #enddocregion unsubscribe
 
-export function docRegionError() {
-  const observable = new Observable<number>(() => {
-    // Subscriber fn...
-  });
+// #docregion error
 
-  // #docregion error
-  observable.subscribe(() => {
-    throw new Error('my error');
-  });
-  // #enddocregion error
-}
+observable.subscribe(() => {
+  throw Error('my error');
+});
 
-export function docRegionChain() {
-  let observable = new Observable<number>(observer => {
-    // Subscriber fn...
-    observer.next(2);
-  });
+// #enddocregion error
 
-  observable =
-  // #docregion chain
+// #docregion chain
 
-  observable.pipe(map(v => 2 * v));
+observable.pipe(map(v => 2 * v));
 
-  // #enddocregion chain
-  return observable;
-}
+// #enddocregion chain
