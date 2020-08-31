@@ -12,7 +12,6 @@ import {getTranslationForTemplate} from '@angular/core/src/render3/i18n/i18n_par
 import {noop} from '../../../compiler/src/render3/view/util';
 import {setDelayProjection, ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
 import {I18nUpdateOpCodes, TI18n, TIcu} from '../../src/render3/interfaces/i18n';
-import {TConstants} from '../../src/render3/interfaces/node';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
 
@@ -58,29 +57,26 @@ describe('Runtime i18n', () => {
   });
 
   function prepareFixture(
-      createTemplate: () => void, updateTemplate: (() => void)|null, nbConsts = 0, nbVars = 0,
-      consts: TConstants = []): TemplateFixture {
-    return new TemplateFixture(
-        createTemplate, updateTemplate || noop, nbConsts, nbVars, null, null, null, undefined,
-        consts);
+      createTemplate: () => void, updateTemplate: (() => void)|null, nbConsts = 0,
+      nbVars = 0): TemplateFixture {
+    return new TemplateFixture(createTemplate, updateTemplate || noop, nbConsts, nbVars);
   }
 
   function getOpCodes(
-      messageOrAtrs: string|string[], createTemplate: () => void, updateTemplate: (() => void)|null,
-      nbConsts: number, index: number): TI18n|I18nUpdateOpCodes {
-    const fixture =
-        prepareFixture(createTemplate, updateTemplate, nbConsts, undefined, [messageOrAtrs]);
+      createTemplate: () => void, updateTemplate: (() => void)|null, nbConsts: number,
+      index: number): TI18n|I18nUpdateOpCodes {
+    const fixture = prepareFixture(createTemplate, updateTemplate, nbConsts);
     const tView = fixture.hostView[TVIEW];
     return tView.data[index + HEADER_OFFSET] as TI18n;
   }
 
   describe('i18nStart', () => {
     it('for text', () => {
-      const message = 'simple text';
+      const MSG_DIV = `simple text`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(message, () => {
-                        ɵɵi18nStart(index, 0);
+      const opCodes = getOpCodes(() => {
+                        ɵɵi18nStart(index, MSG_DIV);
                       }, null, nbConsts, index) as TI18n;
 
       expect(opCodes).toEqual({
@@ -95,13 +91,13 @@ describe('Runtime i18n', () => {
     });
 
     it('for elements', () => {
-      const message = `Hello �#2�world�/#2� and �#3�universe�/#3�!`;
+      const MSG_DIV = `Hello �#2�world�/#2� and �#3�universe�/#3�!`;
       // Template: `<div>Hello <div>world</div> and <span>universe</span>!`
       // 3 consts for the 2 divs and 1 span + 1 const for `i18nStart` = 4 consts
       const nbConsts = 4;
       const index = 1;
-      const opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
@@ -128,11 +124,11 @@ describe('Runtime i18n', () => {
     });
 
     it('for simple bindings', () => {
-      const message = `Hello �0�!`;
+      const MSG_DIV = `Hello �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
       }, null, nbConsts, index);
 
       expect((opCodes as any).update.debug).toEqual([
@@ -152,11 +148,11 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple bindings', () => {
-      const message = `Hello �0� and �1�, again �0�!`;
+      const MSG_DIV = `Hello �0� and �1�, again �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
@@ -180,15 +176,17 @@ describe('Runtime i18n', () => {
       //   </span>
       //   !
       // </div>
-      const message =
+      const MSG_DIV =
           `�0� is rendered as: �*2:1��#1:1�before�*2:2��#1:2�middle�/#1:2��/*2:2�after�/#1:1��/*2:1�!`;
 
       /**** Root template ****/
       // �0� is rendered as: �*2:1��/*2:1�!
       let nbConsts = 3;
       let index = 1;
-      let opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0);
+      const firstTextNode = 3;
+      const rootTemplate = 2;
+      let opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
@@ -209,8 +207,10 @@ describe('Runtime i18n', () => {
       // �#1:1�before�*2:2�middle�/*2:2�after�/#1:1�
       nbConsts = 3;
       index = 0;
-      opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0, 1);
+      const spanElement = 1;
+      const bElementSubTemplate = 2;
+      opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV, 1);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
@@ -233,8 +233,9 @@ describe('Runtime i18n', () => {
       // middle
       nbConsts = 2;
       index = 0;
-      opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0, 2);
+      const bElement = 1;
+      opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV, 2);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
@@ -251,15 +252,15 @@ describe('Runtime i18n', () => {
     });
 
     it('for ICU expressions', () => {
-      const message = `{�0�, plural,
+      const MSG_DIV = `{�0�, plural,
         =0 {no <b title="none">emails</b>!}
         =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(message, () => {
-                        ɵɵi18nStart(index, 0);
+      const opCodes = getOpCodes(() => {
+                        ɵɵi18nStart(index, MSG_DIV);
                       }, null, nbConsts, index) as TI18n;
 
       expect(opCodes).toEqual({
@@ -336,7 +337,7 @@ describe('Runtime i18n', () => {
     });
 
     it('for nested ICU expressions', () => {
-      const message = `{�0�, plural,
+      const MSG_DIV = `{�0�, plural,
         =0 {zero}
         other {�0� {�1�, select,
                        cat {cats}
@@ -346,9 +347,16 @@ describe('Runtime i18n', () => {
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(message, () => {
-        ɵɵi18nStart(index, 0);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nStart(index, MSG_DIV);
       }, null, nbConsts, index);
+      const icuCommentNodeIndex = index + 1;
+      const firstTextNodeIndex = index + 2;
+      const nestedIcuCommentNodeIndex = index + 3;
+      const lastTextNodeIndex = index + 4;
+      const nestedTextNodeIndex = index + 5;
+      const tIcuIndex = 1;
+      const nestedTIcuIndex = 0;
 
       expect(opCodes).toEqual({
         vars: 9,
@@ -435,31 +443,31 @@ describe('Runtime i18n', () => {
 
   describe(`i18nAttribute`, () => {
     it('for text', () => {
-      const message = `Hello world!`;
-      const attrs = ['title', message];
+      const MSG_title = `Hello world!`;
+      const MSG_div_attr = ['title', MSG_title];
       const nbConsts = 2;
       const index = 1;
       const fixture = prepareFixture(() => {
         ɵɵelementStart(0, 'div');
-        ɵɵi18nAttributes(index, 0);
+        ɵɵi18nAttributes(index, MSG_div_attr);
         ɵɵelementEnd();
-      }, null, nbConsts, index, [attrs]);
+      }, null, nbConsts, index);
       const tView = fixture.hostView[TVIEW];
       const opCodes = tView.data[index + HEADER_OFFSET] as I18nUpdateOpCodes;
 
       expect(opCodes).toEqual([]);
       expect(
           (getNativeByIndex(0, fixture.hostView as LView) as any as Element).getAttribute('title'))
-          .toEqual(message);
+          .toEqual(MSG_title);
     });
 
     it('for simple bindings', () => {
-      const message = `Hello �0�!`;
-      const attrs = ['title', message];
+      const MSG_title = `Hello �0�!`;
+      const MSG_div_attr = ['title', MSG_title];
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(attrs, () => {
-        ɵɵi18nAttributes(index, 0);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nAttributes(index, MSG_div_attr);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
@@ -468,12 +476,12 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple bindings', () => {
-      const message = `Hello �0� and �1�, again �0�!`;
-      const attrs = ['title', message];
+      const MSG_title = `Hello �0� and �1�, again �0�!`;
+      const MSG_div_attr = ['title', MSG_title];
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(attrs, () => {
-        ɵɵi18nAttributes(index, 0);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nAttributes(index, MSG_div_attr);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
@@ -482,12 +490,12 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple attributes', () => {
-      const message = `Hello �0�!`;
-      const attrs = ['title', message, 'aria-label', message];
+      const MSG_title = `Hello �0�!`;
+      const MSG_div_attr = ['title', MSG_title, 'aria-label', MSG_title];
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(attrs, () => {
-        ɵɵi18nAttributes(index, 0);
+      const opCodes = getOpCodes(() => {
+        ɵɵi18nAttributes(index, MSG_div_attr);
       }, null, nbConsts, index);
 
       expect(opCodes).toEqual(debugMatch([
