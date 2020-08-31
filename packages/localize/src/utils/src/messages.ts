@@ -48,7 +48,6 @@ export interface SourceLocation {
   start: {line: number, column: number};
   end: {line: number, column: number};
   file: AbsoluteFsPath;
-  text?: string;
 }
 
 /**
@@ -120,17 +119,9 @@ export interface ParsedMessage extends MessageMetadata {
    */
   substitutions: Record<string, any>;
   /**
-   * An optional mapping of placeholder names to source locations
-   */
-  substitutionLocations?: Record<string, SourceLocation|undefined>;
-  /**
    * The static parts of the message.
    */
   messageParts: string[];
-  /**
-   * An optional mapping of message parts to source locations
-   */
-  messagePartLocations?: (SourceLocation|undefined)[];
   /**
    * The names of the placeholders that will be replaced with substitutions.
    */
@@ -144,11 +135,9 @@ export interface ParsedMessage extends MessageMetadata {
  * See `ParsedMessage` for an example.
  */
 export function parseMessage(
-    messageParts: TemplateStringsArray, expressions?: readonly any[], location?: SourceLocation,
-    messagePartLocations?: (SourceLocation|undefined)[],
-    expressionLocations: (SourceLocation|undefined)[] = []): ParsedMessage {
+    messageParts: TemplateStringsArray, expressions?: readonly any[],
+    location?: SourceLocation): ParsedMessage {
   const substitutions: {[placeholderName: string]: any} = {};
-  const substitutionLocations: {[placeholderName: string]: SourceLocation|undefined} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
   const cleanedMessageParts: string[] = [metadata.text];
   const placeholderNames: string[] = [];
@@ -159,7 +148,6 @@ export function parseMessage(
     messageString += `{$${placeholderName}}${messagePart}`;
     if (expressions !== undefined) {
       substitutions[placeholderName] = expressions[i - 1];
-      substitutionLocations[placeholderName] = expressionLocations[i - 1];
     }
     placeholderNames.push(placeholderName);
     cleanedMessageParts.push(messagePart);
@@ -170,13 +158,11 @@ export function parseMessage(
     id: messageId,
     legacyIds,
     substitutions,
-    substitutionLocations,
     text: messageString,
     customId: metadata.customId,
     meaning: metadata.meaning || '',
     description: metadata.description || '',
     messageParts: cleanedMessageParts,
-    messagePartLocations,
     placeholderNames,
     location,
   };
