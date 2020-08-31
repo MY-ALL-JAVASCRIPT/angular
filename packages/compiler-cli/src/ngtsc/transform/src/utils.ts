@@ -40,9 +40,8 @@ export function addImports(
     // for @fileoverview Closure annotation. If there is no @fileoverview annotations, this
     // statement would be a noop.
     const fileoverviewAnchorStmt = ts.createNotEmittedStatement(sf);
-    return ts.updateSourceFileNode(sf, ts.createNodeArray([
-      fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body
-    ]));
+    sf.statements = ts.createNodeArray(
+        [fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body]);
   }
 
   return sf;

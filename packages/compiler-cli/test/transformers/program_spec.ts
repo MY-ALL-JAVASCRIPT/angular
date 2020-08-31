@@ -492,11 +492,11 @@ describe('ng program', () => {
           .toBe(true);
       switch (checks.shouldBe) {
         case ShouldBe.Empty:
-          expect(writeData!.data).toMatch(/^(\s*\/\*([^*]|\*[^\/])*\*\/\s*)?$/);
+          expect(writeData!.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
           break;
         case ShouldBe.EmptyExport:
           expect(writeData!.data)
-              .toMatch(/^((\s*\/\*([^*]|\*[^\/])*\*\/\s*)|(\s*export\s*{\s*};\s*))$/m);
+              .toMatch(/^((\s*\/\*([^*]|\*[^/])*\*\/\s*)|(\s*export\s*{\s*}\s*;\s*)|())$/);
           break;
         case ShouldBe.NoneEmpty:
           expect(writeData!.data).not.toBe('');
@@ -505,14 +505,12 @@ describe('ng program', () => {
     }
 
     assertGenFile(
-        'built/src/util.ngfactory.js',
-        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
+        'built/src/util.ngfactory.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
     assertGenFile(
         'built/src/util.ngfactory.d.ts',
         {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
-        'built/src/util.ngsummary.js',
-        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
+        'built/src/util.ngsummary.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
     assertGenFile(
         'built/src/util.ngsummary.d.ts',
         {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
@@ -989,8 +987,7 @@ describe('ng program', () => {
     const errorDiags =
         program1.emit().diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
     expect(stripAnsi(formatDiagnostics(errorDiags)))
-        .toContain(
-            `src/main.ts:5:13 - error TS2322: Type 'number' is not assignable to type 'string'.`);
+        .toContain(`src/main.ts:5:13 - error TS2322: Type '1' is not assignable to type 'string'.`);
     expect(stripAnsi(formatDiagnostics(errorDiags)))
         .toContain(
             `src/main.html:1:1 - error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);

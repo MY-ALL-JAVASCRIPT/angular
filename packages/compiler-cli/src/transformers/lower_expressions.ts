@@ -167,13 +167,14 @@ function transformSourceFile(
 
       newStatements = tmpStatements;
     }
-
-    const newSf = ts.updateSourceFileNode(
-        sourceFile, ts.setTextRange(ts.createNodeArray(newStatements), sourceFile.statements));
+    // Note: We cannot use ts.updateSourcefile here as
+    // it does not work well with decorators.
+    // See https://github.com/Microsoft/TypeScript/issues/17384
+    const newSf = ts.getMutableClone(sourceFile);
     if (!(sourceFile.flags & ts.NodeFlags.Synthesized)) {
-      (newSf.flags as ts.NodeFlags) &= ~ts.NodeFlags.Synthesized;
+      newSf.flags &= ~ts.NodeFlags.Synthesized;
     }
-
+    newSf.statements = ts.setTextRange(ts.createNodeArray(newStatements), sourceFile.statements);
     return newSf;
   }
 
@@ -206,6 +207,11 @@ export function getExpressionLoweringTransformFactory(
 
 export interface RequestsMap {
   getRequests(sourceFile: ts.SourceFile): RequestLocationMap;
+}
+
+interface MetadataAndLoweringRequests {
+  metadata: ModuleMetadata|undefined;
+  requests: RequestLocationMap;
 }
 
 function isEligibleForLowering(node: ts.Node|undefined): boolean {

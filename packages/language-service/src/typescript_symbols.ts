@@ -849,7 +849,7 @@ function getTsTypeFromBuiltinType(builtinType: BuiltinType, ctx: TypeContext): t
           `Internal error, unhandled literal kind ${builtinType}:${BuiltinType[builtinType]}`);
   }
   const node = ts.createNode(syntaxKind);
-  (node.parent as ts.Node) = ts.createEmptyStatement();
+  node.parent = ts.createEmptyStatement();
   return ctx.checker.getTypeAtLocation(node);
 }
 

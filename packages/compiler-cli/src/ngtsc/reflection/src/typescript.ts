@@ -64,11 +64,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       // optional tokes that don't have providers.
       if (typeNode && ts.isUnionTypeNode(typeNode)) {
         let childTypeNodes = typeNode.types.filter(
-            // TODO(alan-agius4): remove `childTypeNode.kind !== ts.SyntaxKind.NullKeyword` when
-            // TS 3.9 support is dropped. In TS 4.0 NullKeyword is a child of LiteralType.
-            childTypeNode => childTypeNode.kind !== ts.SyntaxKind.NullKeyword &&
-                !(ts.isLiteralTypeNode(childTypeNode) &&
-                  childTypeNode.literal.kind === ts.SyntaxKind.NullKeyword));
+            childTypeNode => childTypeNode.kind !== ts.SyntaxKind.NullKeyword);
 
         if (childTypeNodes.length === 1) {
           typeNode = childTypeNodes[0];
