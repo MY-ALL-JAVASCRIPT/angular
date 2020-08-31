@@ -92,13 +92,11 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * Triggers a warning in dev mode that this input should not be used with reactive forms.
+   * Triggers a warning that this input should not be used with reactive forms.
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      ReactiveErrors.disabledAttrWarning();
-    }
+    ReactiveErrors.disabledAttrWarning();
   }
 
   // TODO(kara): remove next 4 properties once deprecation period is over
@@ -214,16 +212,13 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkParentType(): void {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      if (!(this._parent instanceof FormGroupName) &&
-          this._parent instanceof AbstractFormGroupDirective) {
-        ReactiveErrors.ngModelGroupException();
-      } else if (
-          !(this._parent instanceof FormGroupName) &&
-          !(this._parent instanceof FormGroupDirective) &&
-          !(this._parent instanceof FormArrayName)) {
-        ReactiveErrors.controlParentException();
-      }
+    if (!(this._parent instanceof FormGroupName) &&
+        this._parent instanceof AbstractFormGroupDirective) {
+      ReactiveErrors.ngModelGroupException();
+    } else if (
+        !(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective) &&
+        !(this._parent instanceof FormArrayName)) {
+      ReactiveErrors.controlParentException();
     }
   }
 
