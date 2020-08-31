@@ -49,10 +49,9 @@ Zone.__load_patch('toString', (global: any) => {
   const originalObjectToString = Object.prototype.toString;
   const PROMISE_OBJECT_TO_STRING = '[object Promise]';
   Object.prototype.toString = function() {
-    if (typeof Promise === 'function' && this instanceof Promise) {
+    if (this instanceof Promise) {
       return PROMISE_OBJECT_TO_STRING;
     }
-
     return originalObjectToString.call(this);
   };
 });
